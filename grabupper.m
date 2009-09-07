@@ -35,8 +35,8 @@
 	printf("Pasteboard:\n%s\n\n", [endString UTF8String]);
 	
 	// Alert with result. Select from any of the following.
-	system("afplay /System/Library/Sounds/Glass.aiff");
-	// system("say 'You Are Ell is ready'");
+	// system("afplay /System/Library/Sounds/Glass.aiff");
+	system("say 'You Are Ell is ready'");
 
 }
 
@@ -75,7 +75,7 @@
 				NSString *path = [basepath stringByAppendingPathComponent:fileName];
 				NSImage *image = [[[NSImage alloc]  initWithContentsOfFile:path] autorelease];
 				
-				// Convert the image to jpeg 
+				// Convert the image to jpeg (use "NSPNGFileType" for PNG)
 				NSArray *representations = [image representations];
 				NSData * bitmapData = [NSBitmapImageRep representationOfImageRepsInArray:representations usingType:NSJPEGFileType properties:nil];
 				[bitmapData writeToFile:@"/tmp/foo.jpg" atomically:YES];
