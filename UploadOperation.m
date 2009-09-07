@@ -47,7 +47,6 @@
 	[postData appendData:DATA(SUFFIX)];
 	
 	
-	// Establish the API request. Use upload vs uploadAndPost for skip Upload
     NSString *baseurl = @"http://www.grabup.com/app_upload.php"; 
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
@@ -60,7 +59,7 @@
 	// Submit & retrieve results
     NSError *error;
     NSURLResponse *response;
-	NSLog(@"Contacting GrabUp....");
+	printf("Contacting GrabUp...\n");
     NSData* result = [NSURLConnection sendSynchronousRequest:urlRequest returningResponse:&response error:&error];
     if (!result)
 	{

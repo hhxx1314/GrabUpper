@@ -10,13 +10,15 @@
 @implementation Watcher
 - (void) doneUploading:(NSString *)status
 {
+	
+	// Range didn't work. This does.
 	NSString *endString = [[status componentsSeparatedByString:@"imgup"] lastObject];
 	NSArray *items = [endString componentsSeparatedByString:@"img src=\""];
-	if (items.count < 2) {printf("Error extracting URL.");	return;}
+	if (items.count < 2) {printf("Error extracting URL from GrabUp response.");	return;}
 	
 	endString = [items objectAtIndex:1];
 	items = [endString componentsSeparatedByString:@"?direct"];
-	if (items.count < 2) {printf("Error extracting URL.");	return;}
+	if (items.count < 2) {printf("Error extracting URL from GrabUp response.");	return;}
 	
 	endString = [[items objectAtIndex:0] stringByAppendingString:@"?direct"];
 	NSURL *url = [NSURL URLWithString:endString];
