@@ -23,6 +23,19 @@
 	// And add the ?direct back in. (Trust me, it's better that way.)
 	endString = [[items objectAtIndex:0] stringByAppendingString:@"?direct"];
 	
+	// Shorten with bitly, if possible
+	NSString *bitlyString = [NSString stringWithFormat:@"http://bit.ly/?s=&keyword=&url=%@", [endString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+	bitlyString = [NSString stringWithContentsOfURL:[NSURL URLWithString:bitlyString] encoding:NSUTF8StringEncoding error:nil];
+	if (bitlyString)
+	{
+		items = [bitlyString componentsSeparatedByString:@"shortUrl\": "];
+		if (items.count > 1)
+		{
+			items = [[items objectAtIndex:1] componentsSeparatedByString:@"\""];
+			if (items.count > 2) endString = [items objectAtIndex:1];
+		}
+	}
+
 	// Create URL from the string
 	NSURL *url = [NSURL URLWithString:endString];
 	
