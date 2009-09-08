@@ -59,6 +59,7 @@
     [urlRequest setHTTPMethod: @"POST"];
 	[urlRequest setValue:MULTIPART forHTTPHeaderField: @"Content-Type"];
     [urlRequest setHTTPBody:postData];
+	[postData release];
 	
 	// Submit & retrieve results
     NSError *error;

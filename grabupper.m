@@ -30,6 +30,9 @@
 	NSString *type = NSURLPboardType;
 	[[NSPasteboard generalPasteboard] declareTypes:[NSArray arrayWithObject:type] owner:nil];
 	[url writeToPasteboard:[NSPasteboard generalPasteboard]];
+
+	// Alternatively, text
+	// [[NSPasteboard generalPasteboard] setString:endString forType:NSStringPboardType];
 	
 	// Write info to stdout too
 	printf("Pasteboard:\n%s\n\n", [endString UTF8String]);
@@ -37,7 +40,10 @@
 	// Alert with result. Select from any of the following.
 	// system("afplay /System/Library/Sounds/Glass.aiff");
 	system("say 'You Are Ell is ready'");
-
+	
+	// Open URL in Browser
+	NSString *doit = [NSString stringWithFormat:@"open %@", endString];
+	system([doit UTF8String]);
 }
 
 - (void) notify: (NSNotification *) notification
@@ -68,8 +74,9 @@
 			// Determine the length of time since the screen was shot.
 			NSTimeInterval t = [[NSDate date] timeIntervalSinceDate:picDate];
 			
-			// Proceed if the time interval lies within 5 seconds
-			if (t < 5.0f)
+			// Proceed if the time interval lies within 10 seconds
+			// New extra time is to allow for better screen shot layout
+			if (t < 10.0f)
 			{
 				// Get the full path and the actual image
 				NSString *path = [basepath stringByAppendingPathComponent:fileName];
@@ -87,6 +94,31 @@
 				[op start];
 			}
 		}
+		else if ([fileName hasPrefix:@"Snapz"]) // Snapz Pro Shot
+		{
+			NSString *path = [basepath stringByAppendingPathComponent:fileName];
+			NSDictionary *dict = [[NSFileManager defaultManager] attributesOfItemAtPath:path error:nil];
+			NSTimeInterval t = [[NSDate date] timeIntervalSinceDate:[dict objectForKey:NSFileCreationDate]];
+
+			// Proceed if the time interval lies within 5 seconds
+			if (t < 5.0f)
+			{
+				// Get the full path and the actual image
+				NSImage *image = [[[NSImage alloc]  initWithContentsOfFile:path] autorelease];
+				
+				// Convert the image to jpeg (use "NSPNGFileType" for PNG)
+				NSArray *representations = [image representations];
+				NSData * bitmapData = [NSBitmapImageRep representationOfImageRepsInArray:representations usingType:NSJPEGFileType properties:nil];
+				[bitmapData writeToFile:@"/tmp/foo.jpg" atomically:YES];
+				
+				// Upload the image
+				UploadOperation *op = [[[UploadOperation alloc] init] autorelease];
+				op.path = @"/tmp/foo.jpg";
+				op.delegate = self;
+				[op start];
+			}
+			
+		}
 	}
 }
 @end
@@ -100,6 +132,7 @@ int main (int argc, const char * argv[]) {
 	[[NSDistributedNotificationCenter defaultCenter] addObserver:watcher selector:@selector(notify:) name:@"com.apple.carbon.core.DirectoryNotification" object:nil];
 	CFRunLoopRun();
 	
+	[watcher release];
     [pool drain];
     return 0;
 }
